@@ -1,84 +1,78 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
+
 namespace LGSTrackingApp
 {
-    public partial class StudentForm : Form
+    public partial class AddExam : Form
     {
-        private int currentUserId;
-        private int studentId;
         private string connectionString = @"Server=DEDEOGLU\SQLEXPRESS;Database=LGSTrackerDB;Trusted_Connection=True;";
 
-        public StudentForm(int userId)
+        public AddExam()
         {
             InitializeComponent();
-            currentUserId = userId;
-            GetStudentIdFromUserId();
+            LoadStudents();
         }
 
-        private void GetStudentIdFromUserId()
+        private void LoadStudents()
         {
+            cmbStudents.Items.Clear();
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                try
+                con.Open();
+                SqlCommand cmd = new SqlCommand("SELECT StudentID, Name + ' ' + Surname AS FullName FROM Students", con);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
                 {
-                    con.Open();
-                    string query = "SELECT StudentID FROM Students WHERE UserID = @UserID";
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@UserID", currentUserId);
-
-                    object result = cmd.ExecuteScalar();
-                    studentId = result != null ? Convert.ToInt32(result) : -1;
-                    if (studentId == -1)
-                        MessageBox.Show("Student record not found for this user (UserID: " + currentUserId + ").");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error fetching StudentID:\n" + ex.Message);
+                    cmbStudents.Items.Add(new ComboBoxItem
+                    {
+                        Text = reader["FullName"].ToString(),
+                        Value = (int)reader["StudentID"]
+                    });
                 }
             }
         }
 
-        private void btnAddS_Click(object sender, EventArgs e)
+        private void btnAddExam_Click(object sender, EventArgs e)
         {
-            if (studentId <= 0)
+            if (cmbStudents.SelectedItem == null)
             {
-                MessageBox.Show("Invalid student. Cannot add exam.");
+                MessageBox.Show("Please select a student.");
                 return;
             }
 
-            string examName = txtExamNameS.Text.Trim();
+            string examName = txtExamName.Text.Trim();
             if (string.IsNullOrWhiteSpace(examName))
             {
                 MessageBox.Show("Please enter an exam name.");
                 return;
             }
 
-            DateTime examDate = dateTimePickerExam.Value;
+            var selectedStudent = (ComboBoxItem)cmbStudents.SelectedItem;
+            int studentId = selectedStudent.Value;
+            DateTime examDate = dateTimePicker.Value;
 
-            int mathCorrect = (int)numericMath.Value;
-            int mathWrong = (int)numericMathF.Value;
+            int mathCorrect = (int)numMath.Value;
+            int turkceCorrect = (int)numTurk.Value;
+            int fenCorrect = (int)numFen.Value;
+            int ingCorrect = (int)numIng.Value;
+            int inkCorrect = (int)numInk.Value;
+            int dinCorrect = (int)numDin.Value;
+
+            int mathWrong = (int)numMathF.Value;
+            int turkceWrong = (int)numTurkF.Value;
+            int fenWrong = (int)numFenF.Value;
+            int ingWrong = (int)numIngF.Value;
+            int inkWrong = (int)numInkF.Value;
+            int dinWrong = (int)numDinF.Value;
+
             double mathNet = mathCorrect - mathWrong / 3.0;
-
-            int turkceCorrect = (int)numericTurk.Value;
-            int turkceWrong = (int)numericTurkF.Value;
             double turkceNet = turkceCorrect - turkceWrong / 3.0;
-
-            int fenCorrect = (int)numericFen.Value;
-            int fenWrong = (int)numericFenF.Value;
             double fenNet = fenCorrect - fenWrong / 3.0;
-
-            int ingCorrect = (int)numericIng.Value;
-            int ingWrong = (int)numericIngF.Value;
             double ingNet = ingCorrect - ingWrong / 3.0;
-
-            int inkCorrect = (int)numericInk.Value;
-            int inkWrong = (int)numericInkF.Value;
             double inkNet = inkCorrect - inkWrong / 3.0;
-
-            int dinCorrect = (int)numericDin.Value;
-            int dinWrong = (int)numericDinF.Value;
             double dinNet = dinCorrect - dinWrong / 3.0;
 
             try
@@ -90,16 +84,16 @@ namespace LGSTrackingApp
                     string query = @"INSERT INTO Exams 
                         (StudentID, ExamDate, ExamName,
                          Matematik, MatematikWrong, MatematikNet,
-                         FenBilimleri, FenBilimleriWrong, FenBilimleriNet,
                          Türkçe, TürkçeWrong, TürkçeNet,
+                         FenBilimleri, FenBilimleriWrong, FenBilimleriNet,
                          İngilizce, İngilizceWrong, İngilizceNet,
                          İnkılapTarihi, İnkılapTarihiWrong, İnkılapTarihiNet,
                          DinKültürü, DinKültürüWrong, DinKültürüNet)
                         VALUES
                         (@StudentID, @ExamDate, @ExamName,
                          @MathC, @MathW, @MathN,
-                         @FenC, @FenW, @FenN,
                          @TurkC, @TurkW, @TurkN,
+                         @FenC, @FenW, @FenN,
                          @IngC, @IngW, @IngN,
                          @InkC, @InkW, @InkN,
                          @DinC, @DinW, @DinN)";
@@ -113,13 +107,13 @@ namespace LGSTrackingApp
                     cmd.Parameters.AddWithValue("@MathW", mathWrong);
                     cmd.Parameters.AddWithValue("@MathN", mathNet);
 
-                    cmd.Parameters.AddWithValue("@FenC", fenCorrect);
-                    cmd.Parameters.AddWithValue("@FenW", fenWrong);
-                    cmd.Parameters.AddWithValue("@FenN", fenNet);
-
                     cmd.Parameters.AddWithValue("@TurkC", turkceCorrect);
                     cmd.Parameters.AddWithValue("@TurkW", turkceWrong);
                     cmd.Parameters.AddWithValue("@TurkN", turkceNet);
+
+                    cmd.Parameters.AddWithValue("@FenC", fenCorrect);
+                    cmd.Parameters.AddWithValue("@FenW", fenWrong);
+                    cmd.Parameters.AddWithValue("@FenN", fenNet);
 
                     cmd.Parameters.AddWithValue("@IngC", ingCorrect);
                     cmd.Parameters.AddWithValue("@IngW", ingWrong);
@@ -134,44 +128,15 @@ namespace LGSTrackingApp
                     cmd.Parameters.AddWithValue("@DinN", dinNet);
 
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Your exam results were successfully recorded!");
+                    MessageBox.Show("Exam result added successfully to Exams table.");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error saving exam:\n" + ex.Message);
+                MessageBox.Show("Error adding exam:\n" + ex.Message);
             }
-        }
-
-        private void examResultsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (studentId <= 0)
-            {
-                MessageBox.Show("Student ID not found. Cannot open results.");
-                return;
-            }
-
-            ExamResults resultsForm = new ExamResults(currentUserId);
-            resultsForm.ShowDialog();
-        }
-
-        private void myPerformanceChartToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            PerformanceChart chartForm = new PerformanceChart(currentUserId);
-            chartForm.ShowDialog();
-        }
-
-        private void pDFExportToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MyPDFExport myPDFExport = new MyPDFExport(currentUserId);
-            myPDFExport.ShowDialog();
-        }
-
-        private void btnLogout_Click(object sender, EventArgs e)
-        {
-            this.Hide();
-            Login loginForm = new Login();
-            loginForm.Show();
         }
     }
+
+   
 }

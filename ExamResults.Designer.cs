@@ -61,7 +61,9 @@
             // label10
             // 
             this.label10.AutoSize = true;
+            this.label10.BackColor = System.Drawing.Color.MediumSeaGreen;
             this.label10.Font = new System.Drawing.Font("Monotype Corsiva", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label10.ForeColor = System.Drawing.SystemColors.ControlLightLight;
             this.label10.Location = new System.Drawing.Point(417, 56);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(350, 24);
@@ -77,7 +79,9 @@
             this.Controls.Add(this.dataGridMyResults);
             this.Controls.Add(this.btnMyResults);
             this.Controls.Add(this.label10);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "ExamResults";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "My Exam Results";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMyResults)).EndInit();
             this.ResumeLayout(false);

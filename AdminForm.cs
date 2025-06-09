@@ -13,7 +13,7 @@ namespace LGSTrackingApp
         {
             InitializeComponent();
             connectionString = connStr;
-            LoadStudentsToComboBox();
+          
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -62,15 +62,13 @@ namespace LGSTrackingApp
                     insertStudent.Parameters.AddWithValue("@Surname", surname);
                     insertStudent.Parameters.AddWithValue("@School", school);
                     insertStudent.Parameters.AddWithValue("@Username", username);
-                    insertStudent.Parameters.AddWithValue("@Password", password); 
-
+                    insertStudent.Parameters.AddWithValue("@Password", password);
 
                     int result = insertStudent.ExecuteNonQuery();
                     if (result > 0)
                     {
                         MessageBox.Show("Student successfully added.");
                         ClearInputs();
-                        LoadStudentsToComboBox();
                     }
                     else
                     {
@@ -86,8 +84,8 @@ namespace LGSTrackingApp
 
         private void btnListAllS_Click(object sender, EventArgs e)
         {
-            dataGridStudent.AutoGenerateColumns = true; 
-            dataGridStudent.Columns.Clear();            
+            dataGridStudent.AutoGenerateColumns = true;
+            dataGridStudent.Columns.Clear();
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -95,21 +93,11 @@ namespace LGSTrackingApp
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 dataGridStudent.DataSource = dt;
-                
-
-                
-                if (dataGridStudent.Columns.Contains("Password"))
-                {
-                    dataGridStudent.Columns["Password"].Visible = true;
-                }
-
             }
         }
 
-
         private void dataGridStudents_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = dataGridStudent.Rows[e.RowIndex];
@@ -118,10 +106,9 @@ namespace LGSTrackingApp
                 txtUsernameA.Text = row.Cells["Username"].Value.ToString();
                 txtSchool.Text = row.Cells["School"].Value.ToString();
                 txtPassword.Text = row.Cells["Password"].Value?.ToString();
-
-
             }
         }
+
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             string name = txtName.Text.Trim();
@@ -131,7 +118,8 @@ namespace LGSTrackingApp
             string password = txtPassword.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(surname) ||
-                string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(school) || string.IsNullOrWhiteSpace(password))
+                string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(school) ||
+                string.IsNullOrWhiteSpace(password))
             {
                 MessageBox.Show("Please fill all fields to update.");
                 return;
@@ -145,9 +133,8 @@ namespace LGSTrackingApp
 
                     SqlCommand cmd = new SqlCommand(
                      @"UPDATE Students 
-                     SET Name = @Name, Surname = @Surname, School = @School, Password = @Password
-                     WHERE Username = @Username", con);
-
+                       SET Name = @Name, Surname = @Surname, School = @School, Password = @Password
+                       WHERE Username = @Username", con);
 
                     cmd.Parameters.AddWithValue("@Name", name);
                     cmd.Parameters.AddWithValue("@Surname", surname);
@@ -159,7 +146,7 @@ namespace LGSTrackingApp
                     if (result > 0)
                     {
                         MessageBox.Show("Student updated successfully.");
-                        btnListAllS_Click(null, null); 
+                        btnListAllS_Click(null, null);
                     }
                     else
                     {
@@ -172,6 +159,7 @@ namespace LGSTrackingApp
                 MessageBox.Show("Error updating student:\n" + ex.Message);
             }
         }
+
         private void btnDelete_Click(object sender, EventArgs e)
         {
             string username = txtUsernameA.Text.Trim();
@@ -192,7 +180,6 @@ namespace LGSTrackingApp
                 {
                     con.Open();
 
-                    
                     SqlCommand getStudentId = new SqlCommand(
                         "SELECT StudentID FROM Students WHERE Username = @Username", con);
                     getStudentId.Parameters.AddWithValue("@Username", username);
@@ -206,24 +193,21 @@ namespace LGSTrackingApp
 
                     int studentId = Convert.ToInt32(studentIdObj);
 
-                    
                     SqlCommand deleteExams = new SqlCommand("DELETE FROM Exams WHERE StudentID = @StudentID", con);
                     deleteExams.Parameters.AddWithValue("@StudentID", studentId);
                     deleteExams.ExecuteNonQuery();
 
-                   
                     SqlCommand deleteStudent = new SqlCommand("DELETE FROM Students WHERE StudentID = @StudentID", con);
                     deleteStudent.Parameters.AddWithValue("@StudentID", studentId);
                     deleteStudent.ExecuteNonQuery();
 
-                   
                     SqlCommand deleteUser = new SqlCommand("DELETE FROM Users WHERE Username = @Username", con);
                     deleteUser.Parameters.AddWithValue("@Username", username);
                     deleteUser.ExecuteNonQuery();
 
                     MessageBox.Show("Student and related records deleted.");
                     ClearInputs();
-                    LoadStudentsToComboBox();
+                    
                 }
             }
             catch (Exception ex)
@@ -231,57 +215,7 @@ namespace LGSTrackingApp
                 MessageBox.Show("Error while deleting:\n" + ex.Message);
             }
         }
-        private void btnExam_Click(object sender, EventArgs e)
-        {
-            if (cmbStudents.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a student.");
-                return;
-            }
 
-            var selectedStudent = (ComboBoxItem)cmbStudents.SelectedItem;
-            int studentId = selectedStudent.Value;
-            DateTime examDate = dateTimePicker.Value;
-
-            int matematik = (int)numMath.Value;
-            int turkce = (int)numTurk.Value;
-            int fen = (int)numFen.Value;
-            int ingilizce = (int)numIng.Value;
-            int inkilap = (int)numInk.Value;
-            int din = (int)numDin.Value;
-
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    con.Open();
-
-                    string query = @"INSERT INTO Exams 
-                (StudentID, ExamDate, Matematik, FenBilimleri, Türkçe, İngilizce, İnkılapTarihi, DinKültürü)
-                VALUES
-                (@StudentID, @ExamDate, @Matematik, @FenBilimleri, @Turkce, @Ingilizce, @InkilapTarihi, @DinKulturu)";
-
-                    SqlCommand cmd = new SqlCommand(query, con);
-                    cmd.Parameters.AddWithValue("@StudentID", studentId);
-                    cmd.Parameters.AddWithValue("@ExamDate", examDate);
-                    cmd.Parameters.AddWithValue("@Matematik", matematik);
-                    cmd.Parameters.AddWithValue("@FenBilimleri", fen);
-                    cmd.Parameters.AddWithValue("@Turkce", turkce);
-                    cmd.Parameters.AddWithValue("@Ingilizce", ingilizce);
-                    cmd.Parameters.AddWithValue("@InkilapTarihi", inkilap);
-                    cmd.Parameters.AddWithValue("@DinKulturu", din);
-
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Exam result added successfully to Exams table.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error adding exam:\n" + ex.Message);
-            }
-        }
-
-        
         private void ClearInputs()
         {
             txtName.Clear();
@@ -289,35 +223,37 @@ namespace LGSTrackingApp
             txtUsernameA.Clear();
             txtSchool.Clear();
             txtPassword.Clear();
-
         }
 
 
-        private void LoadStudentsToComboBox()
-        {
-            cmbStudents.Items.Clear();
-
-            using (SqlConnection con = new SqlConnection(connectionString))
-            {
-                con.Open();
-                SqlCommand cmd = new SqlCommand("SELECT StudentID, Name, Surname FROM Students", con);
-                SqlDataReader reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    int id = (int)reader["StudentID"];
-                    string fullName = reader["Name"] + " " + reader["Surname"];
-                    cmbStudents.Items.Add(new ComboBoxItem { Text = fullName, Value = id });
-                }
-            }
-        }
         private void examHistoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
             ExamHistory examForm = new ExamHistory();
             examForm.Show();
         }
 
+        private void addExamToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddExam addExam = new AddExam();
+            addExam.Show();
+        }
+        private void performanceTrackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PerformanceTrack performanceTrack = new PerformanceTrack();
+            performanceTrack.Show();
+        }
 
+        private void pDFExportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PDFExport pdfExport = new PDFExport();
+            pdfExport.Show();
+        }
+
+        private void btnLogoutA_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            Login loginForm = new Login();
+            loginForm.Show();
+        }
     }
 }

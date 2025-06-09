@@ -103,7 +103,9 @@
             this.Controls.Add(this.btnShowAll);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbStudentList);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "ExamHistory";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Exam History";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridHistory)).EndInit();
             this.ResumeLayout(false);

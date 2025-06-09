@@ -57,6 +57,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddExam.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddExam.Designer.cs">
+      <DependentUpon>AddExam.cs</DependentUpon>
+    </Compile>
     <Compile Include="AdminForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +88,30 @@
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyPDFExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MyPDFExport.Designer.cs">
+      <DependentUpon>MyPDFExport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PDFExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PDFExport.Designer.cs">
+      <DependentUpon>PDFExport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PerformanceChart.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PerformanceChart.Designer.cs">
+      <DependentUpon>PerformanceChart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PerformanceTrack.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PerformanceTrack.Designer.cs">
+      <DependentUpon>PerformanceTrack.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Student.cs" />
@@ -92,6 +122,9 @@
     <Compile Include="StudentForm.Designer.cs">
       <DependentUpon>StudentForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AddExam.resx">
+      <DependentUpon>AddExam.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AdminForm.resx">
       <DependentUpon>AdminForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -103,6 +136,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MyPDFExport.resx">
+      <DependentUpon>MyPDFExport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PDFExport.resx">
+      <DependentUpon>PDFExport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PerformanceChart.resx">
+      <DependentUpon>PerformanceChart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PerformanceTrack.resx">
+      <DependentUpon>PerformanceTrack.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

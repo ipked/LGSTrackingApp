@@ -2,7 +2,6 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
-using LGSTrackingApp;
 
 namespace LGSTrackingApp
 {
@@ -51,24 +50,27 @@ namespace LGSTrackingApp
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 string query = @"SELECT 
-                                s.Name + ' ' + s.Surname AS StudentName,
-                                e.ExamDate,
-                                e.Matematik,
-                                e.FenBilimleri,
-                                e.Türkçe,
-                                e.İngilizce,
-                                e.İnkılapTarihi,
-                                e.DinKültürü
-                            FROM Exams e
-                            INNER JOIN Students s ON s.StudentID = e.StudentID
-                            WHERE e.StudentID = @StudentID
-                            ORDER BY e.ExamDate DESC";
+                    s.Name + ' ' + s.Surname AS StudentName,
+                    e.ExamName,
+                    e.ExamDate,
+                    e.Matematik, e.MatematikWrong, e.MatematikNet,
+                    e.FenBilimleri, e.FenBilimleriWrong, e.FenBilimleriNet,
+                    e.Türkçe, e.TürkçeWrong, e.TürkçeNet,
+                    e.İngilizce, e.İngilizceWrong, e.İngilizceNet,
+                    e.İnkılapTarihi, e.İnkılapTarihiWrong, e.İnkılapTarihiNet,
+                    e.DinKültürü, e.DinKültürüWrong, e.DinKültürüNet
+                FROM Exams e
+                INNER JOIN Students s ON s.StudentID = e.StudentID
+                WHERE e.StudentID = @StudentID
+                ORDER BY e.ExamDate DESC";
 
                 SqlDataAdapter da = new SqlDataAdapter(query, con);
                 da.SelectCommand.Parameters.AddWithValue("@StudentID", studentId);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 dataGridHistory.DataSource = dt;
+
+                FormatColumns();
             }
         }
 
@@ -77,26 +79,57 @@ namespace LGSTrackingApp
             using (SqlConnection con = new SqlConnection(connectionString))
             {
                 string query = @"SELECT 
-                                s.Name + ' ' + s.Surname AS StudentName,
-                                e.ExamDate,
-                                e.Matematik,
-                                e.FenBilimleri,
-                                e.Türkçe,
-                                e.İngilizce,
-                                e.İnkılapTarihi,
-                                e.DinKültürü
-                            FROM Exams e
-                            INNER JOIN Students s ON s.StudentID = e.StudentID
-                            ORDER BY s.Name, e.ExamDate DESC";
+                    s.Name + ' ' + s.Surname AS StudentName,
+                    e.ExamName,
+                    e.ExamDate,
+                    e.Matematik, e.MatematikWrong, e.MatematikNet,
+                    e.FenBilimleri, e.FenBilimleriWrong, e.FenBilimleriNet,
+                    e.Türkçe, e.TürkçeWrong, e.TürkçeNet,
+                    e.İngilizce, e.İngilizceWrong, e.İngilizceNet,
+                    e.İnkılapTarihi, e.İnkılapTarihiWrong, e.İnkılapTarihiNet,
+                    e.DinKültürü, e.DinKültürüWrong, e.DinKültürüNet
+                FROM Exams e
+                INNER JOIN Students s ON s.StudentID = e.StudentID
+                ORDER BY s.Name, e.ExamDate DESC";
 
                 SqlDataAdapter da = new SqlDataAdapter(query, con);
                 DataTable dt = new DataTable();
                 da.Fill(dt);
                 dataGridHistory.DataSource = dt;
+
+                FormatColumns();
             }
         }
 
+        private void FormatColumns()
+        {
+            dataGridHistory.Columns["ExamName"].HeaderText = "Deneme Adı";
+            dataGridHistory.Columns["MatematikWrong"].HeaderText = "Matematik Yanlış";
+            dataGridHistory.Columns["MatematikNet"].HeaderText = "Matematik Net";
+            dataGridHistory.Columns["FenBilimleriWrong"].HeaderText = "Fen Yanlış";
+            dataGridHistory.Columns["FenBilimleriNet"].HeaderText = "Fen Net";
+            dataGridHistory.Columns["TürkçeWrong"].HeaderText = "Türkçe Yanlış";
+            dataGridHistory.Columns["TürkçeNet"].HeaderText = "Türkçe Net";
+            dataGridHistory.Columns["İngilizceWrong"].HeaderText = "İngilizce Yanlış";
+            dataGridHistory.Columns["İngilizceNet"].HeaderText = "İngilizce Net";
+            dataGridHistory.Columns["İnkılapTarihiWrong"].HeaderText = "İnkılap Yanlış";
+            dataGridHistory.Columns["İnkılapTarihiNet"].HeaderText = "İnkılap Net";
+            dataGridHistory.Columns["DinKültürüWrong"].HeaderText = "Din Yanlış";
+            dataGridHistory.Columns["DinKültürüNet"].HeaderText = "Din Net";
+
+            string[] netColumns = {
+                "MatematikNet", "FenBilimleriNet", "TürkçeNet",
+                "İngilizceNet", "İnkılapTarihiNet", "DinKültürüNet"
+            };
+
+            foreach (string col in netColumns)
+            {
+                if (dataGridHistory.Columns.Contains(col))
+                {
+                    dataGridHistory.Columns[col].DefaultCellStyle.Format = "F1";
+                }
+            }
+        }
     }
 
-    
 }
